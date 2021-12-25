@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div :class="className" :style="{height:height,width:width}"/>
 </template>
 
 <script>
@@ -7,8 +7,9 @@ import echarts from 'echarts'
 
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
+import { mapGetters } from 'vuex'
 
-const animationDuration = 6000
+const animationDuration = 600
 
 export default {
   mixins: [resize],
@@ -24,39 +25,14 @@ export default {
     height: {
       type: String,
       default: '300px'
-    },
-    pageAName: {
-      type: String,
-      default: 'pageA'
-    },
-    pageBName: {
-      type: String,
-      default: 'pageB'
-    },
-    xAxisData: {
-      type: Array,
-      default: () => {
-        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      }
-    },
-    pageAData: {
-      type: Array,
-      default: () => {
-        return [79, 52, 200, 334, 390, 330, 220]
-      }
-    },
-    pageBData: {
-      type: Array,
-      default: () => {
-        return [80, 52, 200, 334, 390, 330, 220]
-      }
     }
-
   },
-  data() {
-    return {
-      chart: null
-    }
+  computed: {
+    ...mapGetters([
+      'days',
+      'inCommunity',
+      'inIsolation'
+    ])
   },
   mounted() {
     this.$nextTick(() => {
@@ -90,7 +66,7 @@ export default {
         },
         xAxis: [{
           type: 'category',
-          data: this.xAxisData,
+          data: this.days,
           axisTick: {
             alignWithLabel: true
           }
@@ -102,29 +78,20 @@ export default {
           }
         }],
         series: [{
-          name: this.pageAName,
+          name: 'Trong khu cách ly',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
-          data: this.pageAData,
+          data: this.inIsolation,
           animationDuration
         }, {
-          name: this.pageBName,
+          name: 'Ngoài cộng đồng',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
-          data: this.pageBData,
+          data: this.inCommunity,
           animationDuration
-        }
-          // , {
-          //   name: 'pageC',
-          //   type: 'bar',
-          //   stack: 'vistors',
-          //   barWidth: '60%',
-          //   data: [30, 52, 200, 334, 390, 330, 220],
-          //   animationDuration
-          // }
-        ]
+        }]
       })
     }
   }

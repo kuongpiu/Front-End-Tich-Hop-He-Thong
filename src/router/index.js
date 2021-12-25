@@ -71,6 +71,7 @@ export const constantRoutes = [
     meta: {
       noCache: true
     },
+    name: 'Bản đồ',
     children: [
       {
         path: 'map',
@@ -79,6 +80,7 @@ export const constantRoutes = [
         meta: {
           title: 'Bản đồ Covid',
           icon: 'el-icon-map-location',
+          name: 'Bản đồ Covid',
           affix: true,
           noCache: true
         }

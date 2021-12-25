@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <!--    TODO: hide button prevent sidebar.opened-->
-    <!--    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />-->
+<!--    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />-->
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
@@ -44,6 +44,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
+import Hamburger from '@/components/Breadcrumb'
 
 export default {
   components: {
@@ -51,7 +52,8 @@ export default {
     ErrorLog,
     Screenfull,
     SizeSelect,
-    Search
+    Search,
+    Hamburger
   },
   computed: {
     ...mapGetters([

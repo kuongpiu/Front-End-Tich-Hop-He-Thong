@@ -1,49 +1,41 @@
 import axios from 'axios'
 import { getToken } from '@/utils/auth'
+const BASE_URL = 'http://localhost:7800/message'
 export function getCities() {
-  return axios.get('http://localhost:8080/city/all', {
+  return axios.get(BASE_URL + '/city/all', {
     headers: {
-      'Authorization': getToken()
+      Authorization: getToken()
     }
   })
 }
-// export function sendMessage(data) {
-//   const url = 'http://localhost:7800/covid-support'
-//   data = {
-//     ...data,
-//     'RequestTo': 'NotificationServer'
-//   }
-//   console.log(data)
-//   const config = { headers: { 'Content-Type': 'application/json' }}
-//   return axios.post(url, data, config)
-// }
+
 export function sendMessage(data) {
-  return axios.post('http://localhost:8080/message', data, {
+  return axios.post(BASE_URL, data, {
     headers: {
-      'Authorization': getToken(),
+      Authorization: getToken(),
       'Content-Type': 'application/json'
     }
   })
 }
 
 export function getMessages() {
-  return axios.get('http://localhost:8080/message/all', {
+  return axios.get(BASE_URL + '/all', {
     headers: {
-      'Authorization': getToken()
+      Authorization: getToken()
     }
   })
 }
 export function getSubscribeCities() {
-  return axios.get('http://localhost:8080/message/subscribe', {
+  return axios.get(BASE_URL + '/subscribe', {
     headers: {
-      'Authorization': getToken()
+      Authorization: getToken()
     }
   })
 }
 export function updateSubscribeCities(data) {
-  return axios.post('http://localhost:8080/message/subscribe', data, {
+  return axios.post(BASE_URL + '/subscribe', data, {
     headers: {
-      'Authorization': getToken(),
+      Authorization: getToken(),
       'Content-Type': 'application/json'
     }
   })

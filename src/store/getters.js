@@ -16,6 +16,10 @@ const getters = {
   checkInHistory: state => state.user.checkInHistory,
   address: state => state.user.address,
   permission_routes: state => state.permission.routes,
-  errorLogs: state => state.errorLog.logs
+  errorLogs: state => state.errorLog.logs,
+  patients: state => state.patients.patients,
+  days: state => state.patients.days,
+  inIsolation: state => state.patients.inIsolation,
+  inCommunity: state => state.patients.inCommunity
 }
 export default getters

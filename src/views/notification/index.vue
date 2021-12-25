@@ -35,10 +35,15 @@
         </div>
       </div>
     </el-card>
-    <el-dialog :visible.sync="dialogVisible" :title="dialogTitle">
+    <el-dialog :visible.sync="dialogVisible" :title="dialogTitle" :close-on-click-modal="false" @close="resetMessageForm">
       <el-form v-model="messageForm">
         <el-form-item prop="cities" label="Chọn Thành phố">
-          <drag-select :initial-value="messageForm.cities" style="width: 100%; margin:0" @change="setCities"/>
+          <drag-select
+            :key="forceDragSelectRender"
+            :initial-value="messageForm.cities"
+            style="width: 100%; margin:0"
+            @change="setCities"
+          />
         </el-form-item>
         <el-form-item v-if="isSendingMessage" prop="content" label="Nội dung">
           <el-input v-model="messageForm.content" type="textarea" :autosize="{minRows: 4, maxRows:10}"/>
@@ -46,8 +51,12 @@
       </el-form>
       <slot slot="footer">
         <el-button icon="el-icon-circle-close" @click="resetMessageForm">Hủy</el-button>
-        <el-button v-if="isSendingMessage" type="primary" icon="el-icon-s-promotion" :loading="sendMessageProcessing"
-                   @click="sendMessage"
+        <el-button
+          v-if="isSendingMessage"
+          type="primary"
+          icon="el-icon-s-promotion"
+          :loading="sendMessageProcessing"
+          @click="sendMessage"
         >
           Gửi
         </el-button>
@@ -64,7 +73,13 @@ import message from '@/views/notification/components/message'
 import MessageFilter from '@/views/notification/components/messagefilter'
 import DragSelect from '@/views/notification/components/DragSelect'
 import checkPermission from '@/utils/permission'
-import { getMessages, getSubscribeCities, sendMessage, updateSubscribeCities } from '@/api/notification'
+import {
+  getMessages,
+  getSubscribeCities,
+  sendMessage,
+  updateSubscribeCities
+} from '@/api/notification'
+import { sendTelegramMessage } from '@/api/exampleroute'
 
 export default {
   name: 'Index',
@@ -83,7 +98,8 @@ export default {
         content: ''
       },
       sendMessageProcessing: false,
-      loadingMessage: false
+      loadingMessage: false,
+      forceDragSelectRender: 0
     }
   },
   created() {
@@ -133,13 +149,13 @@ export default {
         cities: cities,
         content: this.messageForm.content
       }).then(response => {
-        console.log(response.data)
         this.resetMessageForm()
         this.$message({
           message: 'Gửi thành công !',
           type: 'success'
         })
         this.getMessages()
+        this.sendToTelegram(response.data)
       }).catch(err => {
         console.log(err)
         this.$message({
@@ -150,6 +166,21 @@ export default {
         .finally(() => {
           this.sendMessageProcessing = false
         })
+    },
+    sendToTelegram(data) {
+      console.log('sendToTelegram')
+      console.log(data)
+      /**
+       * If no content or users have the length of 0, sending message makes no sense
+       */
+      if (!data.content || !data.users.length) return
+      const dataToSend = {
+        content: data.content,
+        uid: data.users.filter(user => !!user.telegramUid).map(user => Number.parseInt(user.telegramUid, 10))
+      }
+
+      sendTelegramMessage(dataToSend)
+      console.log(dataToSend)
     },
     subscribe() {
       this.sendMessageProcessing = true
@@ -173,13 +204,11 @@ export default {
     },
     resetMessageForm() {
       this.dialogVisible = false
-      setTimeout(() => {
-        this.messageForm = {
-          cities: [],
-          content: ''
-        }
-        this.sendMessageProcessing = false
-      }, 200)
+      this.messageForm = {
+        cities: [],
+        content: ''
+      }
+      this.sendMessageProcessing = false
     },
     setCities(cities) {
       this.messageForm.cities = cities
@@ -193,11 +222,13 @@ export default {
         console.log(this.messageForm.cities)
         this.dialogVisible = true
         this.dialogTitle = 'Đăng ký nhận thông báo'
+        this.forceDragSelectRender += 1
       })
     },
     showSendMessageDialog() {
       this.dialogVisible = true
       this.dialogTitle = 'Thông báo mới'
+      this.forceDragSelectRender += 1
     }
   }
 }

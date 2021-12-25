@@ -1,6 +1,7 @@
 import { login, logout, getInfo, getCheckInHistory, updateUserInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { getSimpleDate } from '@/utils/dateUtils'
 
 const state = {
   token: getToken(),
@@ -13,7 +14,7 @@ const state = {
   telegramUsername: '',
   telegramUid: '',
   address: '',
-  checkInHistory: []
+  checkInHistory: {}
 }
 
 const mutations = {
@@ -105,6 +106,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
+        // eslint-disable-next-line prefer-const
         let { avatar, role, name, gender, dob, phoneNumber, telegramUsername, telegramUid, address } = data
 
         const roles = [role]
@@ -138,10 +140,12 @@ const actions = {
     })
   },
 
-  getCheckInHistory({ commit, state }) {
+  getCheckInHistory({ commit }) {
     return new Promise((resolve, reject) => {
-      getCheckInHistory(state.name).then(response => {
-        const { checkInHistory } = response.data
+      getCheckInHistory().then(response => {
+        const checkInHistory = transformCheckInListToObject(response.data)
+        // const { checkInHistory } = response.data
+        console.log(checkInHistory)
         commit('SET_CHECKIN_HISTORY', checkInHistory)
         resolve()
       }).catch(err => {
@@ -180,6 +184,39 @@ const actions = {
       resolve()
     })
   }
+}
+
+/*
+* Function transformCheckInListToObject(data)
+* chức năng: chuyển đổi dữ liệu danh sách địa điểm sang hashmap key=ngày, value=thông tin checkin
+* đầu vào là danh sách các check-in record
+* [
+*  {
+        "id": mã record,
+        "name": "Tên địa điểm",
+        "address": "Địa chỉ",
+        "date": "Ngày tới",
+        "startTime": "Giờ tới",
+        "endTime": "Giờ về",
+        "description": "Thông tin thêm, có thể là người tiếp xúc...."
+    }
+* ]
+* */
+
+function transformCheckInListToObject(data) {
+  const checkInHistory = data.reduce((checkInHistory, currentRecord) => {
+    let date = currentRecord.date
+    if (date != null) {
+      date = getSimpleDate(date)
+      if (checkInHistory[date] == null) {
+        checkInHistory[date] = []
+      }
+      checkInHistory[date].push(currentRecord)
+    }
+    return checkInHistory
+  }, {})
+
+  return checkInHistory
 }
 
 export default {

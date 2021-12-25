@@ -73,9 +73,6 @@ export default {
   methods: {
     submit() {
       this.$emit('updateUserInfo', Object.assign({}, this.userCopied))
-      setTimeout(() => {
-        this.resetUpdate()
-      }, 300)
     },
     resetUpdate() {
       this.userCopied = deepClone(this.user)
