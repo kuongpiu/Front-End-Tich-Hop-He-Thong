@@ -4,7 +4,7 @@
 // Get it here: https://console.cloud.google.com/google/maps-apis
 import axios from 'axios'
 
-const API_KEY = 'AIzaSyA5aXX3NgTTfuJJ6vdWi4FD0wq7PMwOeds'
+const API_KEY = ''
 const CALLBACK_NAME = 'gmapsCallback'
 
 let initialized = !!window.google
